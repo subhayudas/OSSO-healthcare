@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -238,48 +239,105 @@ export default function MainNavigationMenu() {
     );
   };
 
+  // Animation variants
+  const navbarVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const logoVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.1,
+      rotate: [0, -5, 5, -5, 0],
+      transition: {
+        duration: 0.5,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const linkVariants = {
+    initial: { y: 0 },
+    hover: {
+      y: -3,
+      transition: {
+        duration: 0.2,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <header className="fixed top-0 w-full z-30 transition-all duration-300">
+    <motion.header
+      className="fixed top-0 w-full z-30"
+      initial="hidden"
+      animate="visible"
+      variants={navbarVariants}
+    >
       <div
         className={`transition-all duration-300 ${
           isScrolled ? "max-w-5xl mx-auto px-4 sm:px-6 mt-6" : "p-4"
         }`}
       >
-        <div
+        <motion.div
           className={`flex h-14 w-full items-center justify-between gap-3 transition-all duration-300
           ${
             isScrolled
-              ? "rounded-full shadow-2xl backdrop-blur-2xl border border-gray-300/50 px-3 shadow-black/[0.04]"
+              ? "rounded-full shadow-2xl backdrop-blur-2xl border border-gray-300/50 px-3 shadow-black/[0.04] bg-white/80"
               : "px-3 rounded-full"
           }
         `}
+          whileHover={isScrolled ? { scale: 1.02 } : {}}
+          transition={{ duration: 0.3 }}
         >
           <div className="flex flex-1 items-center">
             <Link href="/" className="flex items-center">
-              <Image
-                src="/images/ossologo.svg"
-                alt="OSSO Orthopaedic Clinic Logo"
-                width={40}
-                height={40}
-              />
+              <motion.div
+                variants={logoVariants}
+                initial="initial"
+                whileHover="hover"
+              >
+                <Image
+                  src="/images/ossologo.svg"
+                  alt="OSSO Orthopaedic Clinic Logo"
+                  width={40}
+                  height={40}
+                  className="transition-all duration-300"
+                />
+              </motion.div>
             </Link>
           </div>
 
           {/* Desktop Navigation Menu - Hidden on mobile */}
           <div className="hidden lg:block">
             <NavigationMenu className="mx-auto">
-              <NavigationMenuList>
-                {mainNavigation.map((navItem) => (
+              <NavigationMenuList className="gap-1">
+                {mainNavigation.map((navItem, index) => (
                   <NavigationMenuItem key={navItem.title}>
                     {navItem.hasDropdown ? (
                       <>
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
+                        <motion.div
+                          variants={linkVariants}
+                          initial="initial"
+                          whileHover="hover"
+                          custom={index}
                         >
-                          <NavigationMenuTrigger className="bg-neutral-300/30">
-                            {navItem.title}
-                          </NavigationMenuTrigger>
-                        </NavigationMenuLink>
+                          <NavigationMenuLink
+                            className={navigationMenuTriggerStyle()}
+                          >
+                            <NavigationMenuTrigger className="bg-gradient-to-r from-white/80 to-white/50 hover:from-blue-50 hover:to-purple-50 transition-all duration-300">
+                              {navItem.title}
+                            </NavigationMenuTrigger>
+                          </NavigationMenuLink>
+                        </motion.div>
                         <NavigationMenuContent>
                           {hasSpecialLayout(navItem.content) ? (
                             // Special layout for Resources (with sections)
@@ -400,13 +458,23 @@ export default function MainNavigationMenu() {
                       </>
                     ) : (
                       // Simple link without dropdown
-                      <Link href={navItem.href} legacyBehavior passHref>
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
-                        >
-                          {navItem.title}
-                        </NavigationMenuLink>
-                      </Link>
+                      <motion.div
+                        variants={linkVariants}
+                        initial="initial"
+                        whileHover="hover"
+                        custom={index}
+                      >
+                        <Link href={navItem.href} passHref>
+                          <NavigationMenuLink
+                            className={cn(
+                              navigationMenuTriggerStyle(),
+                              "bg-gradient-to-r from-white/80 to-white/50 hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
+                            )}
+                          >
+                            {navItem.title}
+                          </NavigationMenuLink>
+                        </Link>
+                      </motion.div>
                     )}
                   </NavigationMenuItem>
                 ))}
@@ -416,19 +484,40 @@ export default function MainNavigationMenu() {
 
           {/* Desktop Contact Button - Hidden on mobile */}
           <div className="hidden lg:flex flex-1 items-center justify-end">
-            <Link
-              className="bg-gradient-to-tr from-zinc-700 via-55% to-gray-500 inline-flex justify-center whitespace-nowrap rounded-full bg-gray-500 px-3 py-1.5 text-sm font-medium text-white shadow transition-colors hover:bg-gray-600 focus-visible:outline-none focus-visible:ring focus-visible:ring-gray-300"
-              href="/contact"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Contact Us
-            </Link>
+              <Link
+                className="relative bg-gradient-to-r from-blue-500 to-purple-600 inline-flex justify-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 overflow-hidden group"
+                href="/contact"
+              >
+                <span className="relative z-10">Contact Us</span>
+                <motion.span
+                  className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-500 z-0"
+                  initial={{ x: "100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                />
+                <motion.span
+                  className="absolute -inset-1 rounded-full blur-sm bg-gradient-to-r from-blue-400 to-purple-500 opacity-70 group-hover:opacity-100 transition duration-300"
+                  style={{ zIndex: -1 }}
+                />
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile Navigation - Visible only on mobile */}
           <div className="lg:hidden flex flex-1 items-center justify-end">
             <Sheet>
-              <SheetTrigger>
-                <Menu className="h-6 w-6 cursor-pointer" />
+              <SheetTrigger asChild>
+                <motion.button
+                  className="bg-white/80 p-2 rounded-full shadow-md border border-gray-200/50"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Menu className="h-5 w-5 cursor-pointer text-gray-700" />
+                </motion.button>
               </SheetTrigger>
               <SheetContent
                 side="right"
@@ -451,14 +540,14 @@ export default function MainNavigationMenu() {
               </SheetContent>
             </Sheet>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </header>
+    </motion.header>
   );
 }
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
+  React.ComponentRef<"a">,
   React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, ...props }, ref) => {
   return (

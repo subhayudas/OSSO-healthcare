@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Marquee } from "@/components/ui/marquee";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const reviews = [
   {
@@ -106,12 +107,13 @@ const ReviewCard = ({
       <div className="relative z-10">
         <div className="flex flex-row items-center gap-3">
           <div className="rounded-full overflow-hidden border-2 border-white/30 shadow-md">
-            <img
+            <Image
               className="w-10 h-10 object-cover"
               width={40}
               height={40}
               alt={`${name}'s profile picture`}
               src={img}
+              unoptimized // Using unoptimized for external URLs
             />
           </div>
           <div className="flex flex-col">

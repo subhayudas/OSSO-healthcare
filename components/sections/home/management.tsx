@@ -105,8 +105,8 @@ export default function ManagementSection() {
                 ))}
               </CarouselContent>
               <div className="flex justify-center mt-6 gap-4">
-                <CarouselPrevious className="relative static transform-none mx-2" />
-                <CarouselNext className="relative static transform-none mx-2" />
+                <CarouselPrevious className="transform-none mx-2" />
+                <CarouselNext className="transform-none mx-2" />
               </div>
             </Carousel>
           </motion.div>
